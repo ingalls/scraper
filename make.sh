@@ -25,16 +25,27 @@ while read -r LINE; do
         continue
     fi
 
-    WEB=$(curl -s "http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2"  -H 'Host: www.sumner.kansasgis.com' -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'DNT: 1' -H 'Cookie: __utma=165988668.91698580.1438486744.1438856372.1438870996.3; __utmz=165988668.1438486744.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); ASP.NET_SessionId=kcxedwhm0ywdqomwfuuzmux0; __utmc=165988668; __utmb=165988668.11.10.1438870996; __utmt=1' -H 'Connection: keep-alive' -H 'Cache-Control: max-age=0')
+    if [[ ! -z $DEBUG ]]; then
+        echo "-----"
+        echo "WEB: http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2"
+    fi
+
+    WEB=$(curl -s "http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2" -H 'Host: www.sumner.kansasgis.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'DNT: 1' -H 'Referer: http://www.sumner.kansasgis.com/greybox/loader_frame.html?s=0' -H 'Cookie: __utma=165988668.91698580.1438486744.1438881524.1438885614.6; __utmz=165988668.1438486744.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); ASP.NET_SessionId=sbkjrvatbfrj3jx42lowb0dx; __utmc=165988668; __utmb=165988668.4.10.1438885614; __utmt=1' -H 'Connection: keep-alive')
 
     if [ -z $(echo $WEB | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0") ]; then
-        echo "skipping address"
+        echo "could not find address field - you probably need to update curl creds"
         continue
     fi
 
     ADDR=$(echo $WEB \
         | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0" \
         | sed -e 's/<span.*\">//' -e 's/<.*//' | grep -Eo '[0-9].*')
+    if [[ ! -z $DEBUG ]]; then echo "ADDR: $ADDR"; fi
+
+    if [[ -z $(echo $ADDR | grep ',') ]]; then
+        echo "has no street number"
+        continue
+    fi
 
     NUM=$(echo $ADDR | grep -Eo '^[0-9]+' | sed 's/,//g')
     STR=$(echo $ADDR | sed -e 's/,.*//' -e 's/[0-9]*\ //' -e 's/,//g' )
