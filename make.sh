@@ -10,7 +10,12 @@ set -e -o pipefail
 OLDIFS=$IFS
 
 IFS=""
-echo "LON,LAT,NUM,STR,CITY,ZIP,PID" > $(dirname $0)/out.csv
+
+#Only rewrite file if it doesn't exist
+if [ ! -f $(dirname $0)/out.csv ]; then
+    echo "LON,LAT,NUM,STR,CITY,ZIP,PID" > $(dirname $0)/out.csv
+fi
+
 while read -r LINE; do
     CENTRE=$(echo $LINE | jq -r -c '.geometry | .coordinates' | sed -e 's/\[//' -e 's/]//')
     PID=$(echo $LINE | jq -r -c '.properties | .WEB_PUBLIC' | sed -e 's/^.*=//' -e 's/\-//g' -e 's/\.//g')
@@ -21,7 +26,6 @@ while read -r LINE; do
         echo "skipping address"
         continue
     fi
-
 
     ADDR=$(echo $WEB \
         | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0" \
