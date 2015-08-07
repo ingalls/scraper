@@ -16,6 +16,9 @@ if [ ! -f $(dirname $0)/out.csv ]; then
     echo "LON,LAT,NUM,STR,CITY,ZIP,PID" > $(dirname $0)/out.csv
 fi
 
+curl -s 'http://www.sumner.kansasgis.com' -c /tmp/make_cookies.txt &>/dev/null
+curl -s -X POST -d "" 'http://www.sumner.kansasgis.com/Disclaimer.aspx' -b /tmp/make_cookies.txt -c /tmp/make_pass_cookies.txt &>/dev/null
+
 while read -r LINE; do
     CENTRE=$(echo $LINE | jq -r -c '.geometry | .coordinates' | sed -e 's/\[//' -e 's/]//')
     PID=$(echo $LINE | jq -r -c '.properties | .WEB_PUBLIC' | sed -e 's/^.*=//' -e 's/\-//g' -e 's/\.//g')
@@ -30,7 +33,7 @@ while read -r LINE; do
         echo "WEB: http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2"
     fi
 
-    WEB=$(curl -s "http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2" -H 'Host: www.sumner.kansasgis.com' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' -H 'Accept-Language: en-US,en;q=0.5' --compressed -H 'DNT: 1' -H 'Referer: http://www.sumner.kansasgis.com/greybox/loader_frame.html?s=0' -H 'Cookie: __utma=165988668.91698580.1438486744.1438881524.1438885614.6; __utmz=165988668.1438486744.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); ASP.NET_SessionId=sbkjrvatbfrj3jx42lowb0dx; __utmc=165988668; __utmb=165988668.4.10.1438885614; __utmt=1' -H 'Connection: keep-alive')
+    WEB=$(curl -s "http://www.sumner.kansasgis.com/ParcelDetail.aspx?parcel=${PID}&quickref=R2" -b /tmp/make_pass_cookies.txt)
 
     if [ -z $(echo $WEB | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0") ]; then
         echo "could not find address field - you probably need to update curl creds"
