@@ -58,3 +58,4 @@ while read -r LINE; do
     echo "$CENTRE,$NUM,$STR,$CITY,$ZIP,$PID"
     echo "$CENTRE,$NUM,$STR,$CITY,$ZIP,$PID" >> $(dirname $0)/out.csv
 done <<< $($(dirname $0)/turf-cli/turf-point-on-surface.js $(dirname $)/output.geojson | jq -c -r '.features | .[]')
+echo "Download Complete"
