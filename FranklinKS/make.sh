@@ -23,8 +23,6 @@ while read -r LINE; do
     CENTRE=$(echo $LINE | jq -r -c '.geometry | .coordinates' | sed -e 's/\[//' -e 's/]//')
     PID=$(echo $LINE | jq -r -c '.properties | .PropertyNu' | sed -e 's/\-//g' -e 's/\.//g')
 
-    echo $PID
-
     if [ ! -z $(grep -E "${PID}$" $(dirname $0)/out.csv ) ]; then
         echo "$PIN already processed"
         continue
