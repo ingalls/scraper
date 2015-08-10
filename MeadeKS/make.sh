@@ -55,11 +55,6 @@ while read -r LINE; do
     CITY=$(echo $ADDR | grep -Eo ',.*' | sed -e 's/,\ //' -e 's/,.*//' -e 's/,//g')
     ZIP=$(echo $ADDR | grep -Eo '[0-9]{5}$' | sed 's/,//g')
 
-    if [[ $STR == "00000" ]]; then
-        echo "address has no street"
-        continue
-    fi
-
     echo "$CENTRE,$NUM,$STR,$CITY,$ZIP,$PID"
     echo "$CENTRE,$NUM,$STR,$CITY,$ZIP,$PID" >> $(dirname $0)/out.csv
 done <<< $($(dirname $0)/turf-cli/turf-point-on-surface.js $(dirname $)/output.geojson | jq -c -r '.features | .[]')
