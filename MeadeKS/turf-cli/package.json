@@ -1,0 +1,25 @@
+{
+  "name": "turf-cli",
+  "version": "1.0.0",
+  "description": "Command Line Interface to Turf",
+  "main": "point-on-surface.js",
+  "scripts": {
+    "test": "node test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ingalls/turf-cli.git"
+  },
+  "author": "Nicholas Ingalls <nicholas.ingalls@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ingalls/turf-cli/issues"
+  },
+  "homepage": "https://github.com/ingalls/turf-cli#readme",
+  "dependencies": {
+    "geojson-stream": "0.0.0",
+    "minimist": "^1.1.1",
+    "tape": "^4.0.0",
+    "turf-point-on-surface": "^1.1.1"
+  }
+}

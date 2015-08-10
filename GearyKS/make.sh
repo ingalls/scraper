@@ -53,6 +53,10 @@ while read -r LINE; do
     NUM=$(echo $ADDR | grep -Eo '^[0-9]+' | sed 's/,//g')
     STR=$(echo $ADDR | sed -e 's/,.*//' -e 's/[0-9]*\ //' -e 's/,//g' )
     CITY=$(echo $ADDR | grep -Eo ',.*' | sed -e 's/,\ //' -e 's/,.*//' -e 's/,//g')
+    if [[ -z $(echo $ADDR | grep -Eo '[0-9]{5}$') ]]; then 
+        echo "malformed address"
+        continue
+    fi
     ZIP=$(echo $ADDR | grep -Eo '[0-9]{5}$' | sed 's/,//g')
 
     echo "$CENTRE,$NUM,$STR,$CITY,$ZIP,$PID"
