@@ -40,6 +40,11 @@ while read -r LINE; do
         continue
     fi
 
+    if [[ ! -z $(echo $WEB | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0" | grep "Rural,") ]]; then
+        echo "rural property - no address"
+        continue
+    fi
+
     ADDR=$(echo $WEB \
         | grep "GeneralInfo_content_gvwPropertySitusInfo_lblSitusAddress_0" \
         | sed -e 's/<span.*\">//' -e 's/<.*//' | grep -Eo '[0-9].*')
